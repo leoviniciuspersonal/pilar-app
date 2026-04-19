@@ -81,7 +81,7 @@ export default function Today({ user, profile }) {
 
   const PILLARS_SEM_AGUA = PILLARS.filter(p => p.id !== 'hidratacao')
 
-  if (loading) return React.createElement('div', { style: { padding: '2rem', color: '#666', textAlign: 'center' } }, 'Carregando...')
+  if (loading) return <div style={{ padding: '2rem', color: '#666', textAlign: 'center' }}>Carregando...</div>
 
   return (
     <div>
