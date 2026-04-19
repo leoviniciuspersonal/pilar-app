@@ -5,6 +5,7 @@ import Onboarding from './components/Onboarding'
 import Today from './pages/Today'
 import History from './pages/History'
 import Trainer from './pages/Trainer'
+import Profile from './pages/Profile'
 import './index.css'
 
 export default function App() {
@@ -44,7 +45,7 @@ export default function App() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted, #666)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
       Carregando...
     </div>
   )
@@ -60,7 +61,7 @@ export default function App() {
   return (
     <div className="app">
       <div className="topbar">
-        <div className="topbar-title">⚡ Pilar</div>
+        <div className="topbar-title">Pilar</div>
         <div className="topbar-user">
           <span>{profile?.name || session.user.email}</span>
           <button onClick={signOut} style={{ fontSize: 12, padding: '4px 10px' }}>Sair</button>
@@ -68,15 +69,17 @@ export default function App() {
       </div>
 
       <div className="nav">
-        <button className={`nav-btn ${tab === 'today' ? 'active' : ''}`} onClick={() => setTab('today')}>Hoje</button>
-        <button className={`nav-btn ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>Histórico</button>
+        <button className={'nav-btn' + (tab === 'today' ? ' active' : '')} onClick={() => setTab('today')}>Hoje</button>
+        <button className={'nav-btn' + (tab === 'history' ? ' active' : '')} onClick={() => setTab('history')}>Historico</button>
+        <button className={'nav-btn' + (tab === 'profile' ? ' active' : '')} onClick={() => setTab('profile')}>Perfil</button>
         {isTrainer && (
-          <button className={`nav-btn ${tab === 'trainer' ? 'active' : ''}`} onClick={() => setTab('trainer')}>Clientes</button>
+          <button className={'nav-btn' + (tab === 'trainer' ? ' active' : '')} onClick={() => setTab('trainer')}>Clientes</button>
         )}
       </div>
 
       {tab === 'today' && <Today user={session.user} profile={profile} />}
       {tab === 'history' && <History user={session.user} />}
+      {tab === 'profile' && <Profile user={session.user} profile={profile} onUpdate={() => loadProfile(session.user.id)} />}
       {tab === 'trainer' && isTrainer && <Trainer user={session.user} />}
     </div>
   )
