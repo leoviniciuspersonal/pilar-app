@@ -65,7 +65,7 @@ export default function Today({ user, profile }) {
   const now = new Date()
   const h = now.getHours()
   const greet = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
-  const firstName = profile?.name?.split(' ')[0] || 'você'
+  const firstName = profile?.name?.split(' ')[0] || 'voce'
 
   const pillarsData = {}
   Object.entries(checkins).forEach(([k, v]) => { pillarsData[k] = v.data })
@@ -74,7 +74,7 @@ export default function Today({ user, profile }) {
 
   const metas = [
     { label: 'Calorias', value: profile?.target_cals, unit: 'kcal', color: '#D85A30' },
-    { label: 'Proteína', value: profile?.target_protein, unit: 'g', color: '#1D9E75' },
+    { label: 'Proteina', value: profile?.target_protein, unit: 'g', color: '#1D9E75' },
     { label: 'Carbo', value: profile?.target_carbs, unit: 'g', color: '#BA7517' },
     { label: 'Gordura', value: profile?.target_fat, unit: 'g', color: '#7F77DD' },
   ].filter(m => m.value)
@@ -82,7 +82,7 @@ export default function Today({ user, profile }) {
   const PILLARS_SEM_AGUA = PILLARS.filter(p => p.id !== 'hidratacao')
 
   if (loading) return (
-    <div style={{ padding: '2rem', color: 'var(--text-muted,#666)', textAlign: 'center' }}>Carregando...</div>
+    <div style={{ padding: '2rem', color: '#666', textAlign: 'center' }}>Carregando...</div>
   )
 
   return (
@@ -91,15 +91,15 @@ export default function Today({ user, profile }) {
 
       {metas.length > 0 && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: 12, color: 'var(--text-muted,#666)', marginBottom: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Metas do dia
+          <div style={{ fontSize: 12, color: '#666', marginBottom: 10, fontWeight: 500 }}>
+            METAS DO DIA
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
             {metas.map(m => (
-              <div key={m.label} style={{ background: 'var(--card,#fff)', border: '0.5px solid var(--border,rgba(0,0,0,0.1))', borderRadius: 10, padding: '0.75rem' }}>
-                <div style={{ fontSize: 11, color: 'var(--text-muted,#666)', marginBottom: 4 }}>{m.label}</div>
+              <div key={m.label} style={{ background: 'var(--card,#fff)', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 10, padding: '0.75rem' }}>
+                <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>{m.label}</div>
                 <div style={{ fontSize: 18, fontWeight: 500, color: m.color }}>{m.value}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted,#666)' }}>{m.unit}/dia</div>
+                <div style={{ fontSize: 11, color: '#666' }}>{m.unit}/dia</div>
               </div>
             ))}
           </div>
@@ -110,27 +110,4 @@ export default function Today({ user, profile }) {
 
       <div className="day-score-card card" style={{ marginBottom: '1rem' }}>
         <div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted,#666)' }}>pontuação do dia</div>
-          <div className="day-score-num">{dayScore !== null ? dayScore + '%' : '—'}</div>
-        </div>
-        {badge && <span className={`badge badge-${badge.type}`}>{badge.label}</span>}
-      </div>
-
-      <div className="stat-row">
-        <div className="stat-card"><div className="stat-num">{stats.streak}</div><div className="stat-lbl">dias seguidos</div></div>
-        <div className="stat-card"><div className="stat-num">{stats.best}</div><div className="stat-lbl">melhor sequência</div></div>
-        <div className="stat-card"><div className="stat-num">{stats.total}</div><div className="stat-lbl">dias registrados</div></div>
-      </div>
-
-      <div className="pillars-grid">
-        {PILLARS_SEM_AGUA.map(p => {
-          const c = checkins[p.id]
-          const done = !!c
-          return (
-            <div key={p.id} className={`pillar-card ${done ? 'done' : ''}`} onClick={() => setOpenPillar(p.id)}>
-              <div className="pillar-header">
-                <div className="pillar-icon" style={{ background: p.color + '22' }}>{p.icon}</div>
-                <div className="pillar-check">{done ? '✓' : ''}</div>
-              </div>
-              <div className="pillar-name">{p.name}</div>
-              <div className="pillar-label">{done ? 'registrado' : 'toque para registrar'}</div>
+          <div style={{ fontSize: 12, color: '#666' }}>pontuac
