@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { PILLARS, getDayScore, getScoreBadge } from '../lib/pillars'
 import CheckinModal from '../components/CheckinModal'
+import WaterTracker from '../components/WaterTracker'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 
@@ -76,8 +77,9 @@ export default function Today({ user, profile }) {
     { label: 'Proteína', value: profile?.target_protein, unit: 'g', color: '#1D9E75' },
     { label: 'Carbo', value: profile?.target_carbs, unit: 'g', color: '#BA7517' },
     { label: 'Gordura', value: profile?.target_fat, unit: 'g', color: '#7F77DD' },
-    { label: 'Água', value: profile?.target_water, unit: 'L', color: '#378ADD' },
   ].filter(m => m.value)
+
+  const PILLARS_SEM_AGUA = PILLARS.filter(p => p.id !== 'hidratacao')
 
   if (loading) return (
     <div style={{ padding: '2rem', color: 'var(--text-muted,#666)', textAlign: 'center' }}>Carregando...</div>
@@ -97,15 +99,14 @@ export default function Today({ user, profile }) {
               <div key={m.label} style={{ background: 'var(--card,#fff)', border: '0.5px solid var(--border,rgba(0,0,0,0.1))', borderRadius: 10, padding: '0.75rem' }}>
                 <div style={{ fontSize: 11, color: 'var(--text-muted,#666)', marginBottom: 4 }}>{m.label}</div>
                 <div style={{ fontSize: 18, fontWeight: 500, color: m.color }}>{m.value}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted,#666)', marginBottom: 8 }}>{m.unit}/dia</div>
-                <div style={{ height: 3, background: 'rgba(0,0,0,0.08)', borderRadius: 2 }}>
-                  <div style={{ height: '100%', width: '0%', background: m.color, borderRadius: 2 }} />
-                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted,#666)' }}>{m.unit}/dia</div>
               </div>
             ))}
           </div>
         </div>
       )}
+
+      <WaterTracker user={user} meta={profile?.target_water || 2} />
 
       <div className="day-score-card card" style={{ marginBottom: '1rem' }}>
         <div>
@@ -122,7 +123,7 @@ export default function Today({ user, profile }) {
       </div>
 
       <div className="pillars-grid">
-        {PILLARS.map(p => {
+        {PILLARS_SEM_AGUA.map(p => {
           const c = checkins[p.id]
           const done = !!c
           return (
@@ -132,27 +133,4 @@ export default function Today({ user, profile }) {
                 <div className="pillar-check">{done ? '✓' : ''}</div>
               </div>
               <div className="pillar-name">{p.name}</div>
-              <div className="pillar-score">{done ? c.score + '%' : '—'}</div>
-              <div className="pillar-label">{done ? 'registrado' : 'toque para registrar'}</div>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: (done ? c.score : 0) + '%', background: p.color }} />
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {openPillar && (() => {
-        const p = PILLARS.find(x => x.id === openPillar)
-        const existing = checkins[openPillar]?.data
-        return (
-          <CheckinModal
-            pillar={p} existing={existing}
-            onSave={(vals, score) => handleSave(openPillar, vals, score)}
-            onClose={() => setOpenPillar(null)}
-          />
-        )
-      })()}
-    </div>
-  )
-}
+              <div className="pillar-score">{done ? c.score + '%' : '
