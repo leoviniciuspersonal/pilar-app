@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './lib/supabase'
 import Auth from './components/Auth'
+import Onboarding from './components/Onboarding'
 import Today from './pages/Today'
 import History from './pages/History'
 import Trainer from './pages/Trainer'
@@ -43,12 +44,16 @@ export default function App() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted, #666)' }}>
       Carregando...
     </div>
   )
 
   if (!session) return <Auth />
+
+  if (session && profile && !profile.onboarding_done) {
+    return <Onboarding user={session.user} onComplete={() => loadProfile(session.user.id)} />
+  }
 
   const isTrainer = profile?.role === 'trainer'
 
@@ -63,25 +68,10 @@ export default function App() {
       </div>
 
       <div className="nav">
-        <button
-          className={`nav-btn ${tab === 'today' ? 'active' : ''}`}
-          onClick={() => setTab('today')}
-        >
-          Hoje
-        </button>
-        <button
-          className={`nav-btn ${tab === 'history' ? 'active' : ''}`}
-          onClick={() => setTab('history')}
-        >
-          Histórico
-        </button>
+        <button className={`nav-btn ${tab === 'today' ? 'active' : ''}`} onClick={() => setTab('today')}>Hoje</button>
+        <button className={`nav-btn ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>Histórico</button>
         {isTrainer && (
-          <button
-            className={`nav-btn ${tab === 'trainer' ? 'active' : ''}`}
-            onClick={() => setTab('trainer')}
-          >
-            Clientes
-          </button>
+          <button className={`nav-btn ${tab === 'trainer' ? 'active' : ''}`} onClick={() => setTab('trainer')}>Clientes</button>
         )}
       </div>
 
