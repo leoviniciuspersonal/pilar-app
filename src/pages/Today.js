@@ -133,4 +133,4 @@ export default function Today({ user, profile }) {
                 <div className="pillar-check">{done ? '✓' : ''}</div>
               </div>
               <div className="pillar-name">{p.name}</div>
-              <div className="pillar-score">{done ? c.score + '%' : '
+              <div className="pillar-label">{done ? 'registrado' : 'toque para registrar'}</div>
