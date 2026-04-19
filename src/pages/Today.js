@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { PILLARS, getDayScore, getScoreBadge } from '../lib/pillars'
 import CheckinModal from '../components/CheckinModal'
 import WaterTracker from '../components/WaterTracker'
+import MacroTracker from '../components/MacroTracker'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 
@@ -72,13 +73,6 @@ export default function Today({ user, profile }) {
   const dayScore = getDayScore(pillarsData)
   const badge = getScoreBadge(dayScore)
 
-  const metas = [
-    { label: 'Calorias', value: profile && profile.target_cals, unit: 'kcal', color: '#D85A30' },
-    { label: 'Proteina', value: profile && profile.target_protein, unit: 'g', color: '#1D9E75' },
-    { label: 'Carbo', value: profile && profile.target_carbs, unit: 'g', color: '#BA7517' },
-    { label: 'Gordura', value: profile && profile.target_fat, unit: 'g', color: '#7F77DD' },
-  ].filter(m => m.value)
-
   const PILLARS_SEM_AGUA = PILLARS.filter(p => p.id !== 'hidratacao')
 
   if (loading) return <div style={{ padding: '2rem', color: '#666', textAlign: 'center' }}>Carregando...</div>
@@ -87,22 +81,9 @@ export default function Today({ user, profile }) {
     <div>
       <p className="greeting"><strong>{greet}, {firstName}.</strong> Como foi hoje?</p>
 
-      {metas.length > 0 && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: 12, color: '#666', marginBottom: 10, fontWeight: 500 }}>METAS DO DIA</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
-            {metas.map(m => (
-              <div key={m.label} style={{ background: 'var(--card,#fff)', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 10, padding: '0.75rem' }}>
-                <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>{m.label}</div>
-                <div style={{ fontSize: 18, fontWeight: 500, color: m.color }}>{m.value}</div>
-                <div style={{ fontSize: 11, color: '#666' }}>{m.unit}/dia</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       <WaterTracker user={user} meta={(profile && profile.target_water) || 2} />
+
+      <MacroTracker user={user} profile={profile} />
 
       <div className="day-score-card card" style={{ marginBottom: '1rem' }}>
         <div>
