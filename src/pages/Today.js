@@ -65,7 +65,7 @@ export default function Today({ user, profile }) {
   const now = new Date()
   const h = now.getHours()
   const greet = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
-  const firstName = profile?.name?.split(' ')[0] || 'voce'
+  const firstName = (profile && profile.name) ? profile.name.split(' ')[0] : 'voce'
 
   const pillarsData = {}
   Object.entries(checkins).forEach(([k, v]) => { pillarsData[k] = v.data })
@@ -73,17 +73,15 @@ export default function Today({ user, profile }) {
   const badge = getScoreBadge(dayScore)
 
   const metas = [
-    { label: 'Calorias', value: profile?.target_cals, unit: 'kcal', color: '#D85A30' },
-    { label: 'Proteina', value: profile?.target_protein, unit: 'g', color: '#1D9E75' },
-    { label: 'Carbo', value: profile?.target_carbs, unit: 'g', color: '#BA7517' },
-    { label: 'Gordura', value: profile?.target_fat, unit: 'g', color: '#7F77DD' },
+    { label: 'Calorias', value: profile && profile.target_cals, unit: 'kcal', color: '#D85A30' },
+    { label: 'Proteina', value: profile && profile.target_protein, unit: 'g', color: '#1D9E75' },
+    { label: 'Carbo', value: profile && profile.target_carbs, unit: 'g', color: '#BA7517' },
+    { label: 'Gordura', value: profile && profile.target_fat, unit: 'g', color: '#7F77DD' },
   ].filter(m => m.value)
 
   const PILLARS_SEM_AGUA = PILLARS.filter(p => p.id !== 'hidratacao')
 
-  if (loading) return (
-    <div style={{ padding: '2rem', color: '#666', textAlign: 'center' }}>Carregando...</div>
-  )
+  if (loading) return React.createElement('div', { style: { padding: '2rem', color: '#666', textAlign: 'center' } }, 'Carregando...')
 
   return (
     <div>
@@ -91,9 +89,7 @@ export default function Today({ user, profile }) {
 
       {metas.length > 0 && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: 12, color: '#666', marginBottom: 10, fontWeight: 500 }}>
-            METAS DO DIA
-          </div>
+          <div style={{ fontSize: 12, color: '#666', marginBottom: 10, fontWeight: 500 }}>METAS DO DIA</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
             {metas.map(m => (
               <div key={m.label} style={{ background: 'var(--card,#fff)', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: 10, padding: '0.75rem' }}>
@@ -106,8 +102,54 @@ export default function Today({ user, profile }) {
         </div>
       )}
 
-      <WaterTracker user={user} meta={profile?.target_water || 2} />
+      <WaterTracker user={user} meta={(profile && profile.target_water) || 2} />
 
       <div className="day-score-card card" style={{ marginBottom: '1rem' }}>
         <div>
-          <div style={{ fontSize: 12, color: '#666' }}>pontuac
+          <div style={{ fontSize: 12, color: '#666' }}>pontuacao do dia</div>
+          <div className="day-score-num">{dayScore !== null ? dayScore + '%' : '--'}</div>
+        </div>
+        {badge && <span className={'badge badge-' + badge.type}>{badge.label}</span>}
+      </div>
+
+      <div className="stat-row">
+        <div className="stat-card"><div className="stat-num">{stats.streak}</div><div className="stat-lbl">dias seguidos</div></div>
+        <div className="stat-card"><div className="stat-num">{stats.best}</div><div className="stat-lbl">melhor sequencia</div></div>
+        <div className="stat-card"><div className="stat-num">{stats.total}</div><div className="stat-lbl">dias registrados</div></div>
+      </div>
+
+      <div className="pillars-grid">
+        {PILLARS_SEM_AGUA.map(p => {
+          const c = checkins[p.id]
+          const done = !!c
+          return (
+            <div key={p.id} className={'pillar-card' + (done ? ' done' : '')} onClick={() => setOpenPillar(p.id)}>
+              <div className="pillar-header">
+                <div className="pillar-icon" style={{ background: p.color + '22' }}>{p.icon}</div>
+                <div className="pillar-check">{done ? 'v' : ''}</div>
+              </div>
+              <div className="pillar-name">{p.name}</div>
+              <div className="pillar-score">{done ? c.score + '%' : '--'}</div>
+              <div className="pillar-label">{done ? 'registrado' : 'toque para registrar'}</div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: (done ? c.score : 0) + '%', background: p.color }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {openPillar && (() => {
+        const p = PILLARS.find(x => x.id === openPillar)
+        const existing = checkins[openPillar] ? checkins[openPillar].data : undefined
+        return (
+          <CheckinModal
+            pillar={p} existing={existing}
+            onSave={(vals, score) => handleSave(openPillar, vals, score)}
+            onClose={() => setOpenPillar(null)}
+          />
+        )
+      })()}
+    </div>
+  )
+}
